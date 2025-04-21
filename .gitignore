@@ -1,0 +1,8 @@
+node_modules
+# Keep environment variables out of version control
+.env
+src/access.log
+<<<<<<< HEAD
+requitements_js.txt
+=======
+>>>>>>> b66a8f9ce9beea532ecbefff5299faaaa2853678

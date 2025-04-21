@@ -1,0 +1,86 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["prismaSchemaFolder"]
+}
+
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model MajorBudgetLine{
+  id          String  @id  @default(uuid())
+  numRef      String  @unique
+  serviceId   String?  
+  code        String  @unique
+  name        String  @unique
+  createdBy   String
+  updatedBy   String?
+  budgetLineNames  BudgetLineName[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime  @updatedAt
+  isActive  Boolean @default(true)
+}
+
+model BudgetLineName{
+  id          String  @id  @default(uuid())
+  numRef      String  @unique
+  code        String  @unique
+  name        String  
+  majorBudgetLineId   String
+  majorBudgetLine    MajorBudgetLine?   @relation(fields: [majorBudgetLineId], references: [id])
+  createdBy   String
+  updatedBy   String?
+  budgetLineOfs     BudgetLineOf[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  isActive  Boolean   @default(true)
+}
+
+model BudgetLineOf{
+  id          String  @id  @default(uuid())
+  numRef      String  @unique
+  budgetLineNameId String
+  budgetLineName    BudgetLineName?   @relation(fields: [budgetLineNameId], references: [id])
+  createdBy   String
+  updatedBy   String?
+  breakdowns        BreakdownBudgetLineOf[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime  @updatedAt
+  isActive  Boolean @default(true)
+}
+
+model BreakdownBudgetLineOf {
+  id               String  @id @default(uuid())
+  numRef           String  @unique
+  budgetLineOfId   String
+  budgetLineOf     BudgetLineOf? @relation(fields: [budgetLineOfId], references: [id])
+  month            Month
+  estimatedAmount  Decimal
+  realAmount       Decimal?
+  createdBy        String
+  updatedBy        String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  isActive         Boolean  @default(true)
+  // Contrainte d'unicité composite sur budgetLineOfId et month
+  @@unique([budgetLineOfId, month])
+}
+
+enum Month { // ✅ Nom simplifié
+  JANVIER
+  FEVRIER
+  MARS
+  AVRIL
+  MAI
+  JUIN
+  JUILLET
+  AOUT
+  SEPTEMBRE
+  OCTOBRE
+  NOVEMBRE
+  DECEMBRE
+}

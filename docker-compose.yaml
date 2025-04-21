@@ -1,0 +1,142 @@
+# networks:
+#   app-network:
+#       driver: bridge
+#   web:
+#     external: true
+#   internal:
+#     external: true  
+
+
+# services:
+#   budget_line:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     image: nodejs
+#     container_name: budget_line
+#     restart: unless-stopped
+#     env_file: .env
+#     environment:
+#       - USER_GATEWAY_API_URL=$USER_GATEWAY_API_URL
+#       - BUDGET_LINE_API_URL=$BUDGET_LINE_API_URL
+
+#     labels:
+#       - traefik.http.routers.blog.rule=Host(`budget_line.bfcgroupsa.com`)
+#       - traefik.http.routers.blog.tls=true
+#       - traefik.http.routers.blog.tls.certresolver=lets-encrypt
+#       - traefik.port=80
+
+#     networks:
+#       - internal
+#       - web
+
+#   webserver:
+#     image: nginx:mainline-alpine
+#     container_name: webserver
+#     restart: unless-stopped
+#     ports:
+#       - "80:80"
+#       - "443:443"
+#     volumes:
+#       - web-root:/var/www/html
+#       - .:/home/node/app
+#       - node_modules:/home/node/app/node_modules
+#       - ./nginx-conf:/etc/nginx/conf.d
+#       - certbot-etc:/etc/letsencrypt
+#       - certbot-var:/var/lib/letsencrypt
+#     depends_on:
+#       - budget_line
+#     networks:
+#       - app-network
+
+#   certbot:
+#     image: certbot/certbot
+#     container_name: certbot
+#     volumes:
+#       - certbot-etc:/etc/letsencrypt
+#       - certbot-var:/var/lib/letsencrypt
+#       - web-root:/var/www/html
+#     depends_on:
+#       - webserver
+#     # command: certonly --webroot --webroot-path=/var/www/html --email ysiaka@bfclimited.com --agree-tos --no-eff-email --staging -d budget_line.bfcgroupsa.com  -d www.budget_line.bfcgroupsa.com
+#     command: certonly --webroot --webroot-path=/var/www/html --email ysiaka@bfclimited.com --agree-tos --no-eff-email --force-renewal -d budget_line.bfcgroupsa.com  -d www.budget_line.bfcgroupsa.com
+#  version docker
+version: '3.8'
+
+# Définition des réseaux
+networks:
+  app-network: # Réseau interne pour les services
+    driver: bridge
+  web: # Réseau externe pour Traefik ou autres services web
+    external: true
+  internal: # Réseau externe pour les communications internes
+    external: true
+
+# Définition des volumes
+volumes:
+  web-root: # Volume pour le contenu du site web
+  node_modules: # Volume pour les dépendances Node.js
+  certbot-etc: # Volume pour les certificats Let's Encrypt
+  certbot-var: # Volume pour les données temporaires de Certbot
+
+# Définition des services
+services:
+  budget_line:
+    build:
+      context: . # Contexte de construction (répertoire courant)
+      dockerfile: Dockerfile # Fichier Dockerfile à utiliser
+    image: budget-line-app:latest # Nom d'image spécifique // image: nodejs
+    container_name: budget_line
+    restart: unless-stopped
+    env_file: .env # Chargement des variables d'environnement depuis .env
+    environment:
+      - USER_GATEWAY_API_URL=${USER_GATEWAY_API_URL} # Variables utilisées dans le conteneur
+      - BUDGET_LINE_API_URL=${BUDGET_LINE_API_URL}
+      - USERS_API=${USERS_API}
+      - ENTITY_API=${ENTITY_API}
+    labels:
+      - traefik.http.routers.budget_line.rule=Host(`budget_line.bfcgroupsa.com`) # Configuration Traefik pour l'hôte
+      - traefik.http.routers.budget_line.tls=true # Activation du TLS
+      - traefik.http.routers.budget_line.tls.certresolver=lets-encrypt # Utilisation du resolver Let's Encrypt
+      - traefik.port=80 # Port exposé pour Traefik
+    networks:
+      - internal # Connexion au réseau interne
+      - web # Connexion au réseau web
+
+  webserver:
+    image: nginx:mainline-alpine # Image légère de Nginx
+    container_name: webserver
+    restart: unless-stopped
+    ports:
+      - "80:80" # Ports HTTP/HTTPS exposés (à supprimer si Traefik est utilisé)
+      - "443:443"
+    volumes:
+      - web-root:/var/www/html # Contenu du site web
+      - .:/home/node/app # Code source de l'application
+      - node_modules:/home/node/app/node_modules # Dépendances Node.js
+      - ./nginx-conf:/etc/nginx/conf.d # Configuration Nginx
+      - certbot-etc:/etc/letsencrypt # Certificats Let's Encrypt
+      - certbot-var:/var/lib/letsencrypt # Données temporaires Certbot
+    depends_on:
+      - budget_line # Dépendance sur le service budget_line
+    networks:
+      - app-network # Connexion au réseau interne
+
+  certbot:
+    image: certbot/certbot # Image officielle Certbot
+    container_name: certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt # Certificats Let's Encrypt
+      - certbot-var:/var/lib/letsencrypt # Données temporaires Certbot
+      - web-root:/var/www/html # Contenu du site web pour la validation ACME
+    depends_on:
+      - webserver # Dépendance sur le service webserver
+    command: >
+      certonly --webroot
+      --webroot-path=/var/www/html
+      --email @bfclimited.com
+      --agree-tos
+      --no-eff-email
+      --staging # Mode test pour éviter les limites de Let's Encrypt
+      -d budget_line.bfcgroupsa.com
+      -d www.budget_line.bfcgroupsa.com

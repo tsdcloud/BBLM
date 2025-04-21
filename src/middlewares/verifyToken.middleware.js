@@ -1,0 +1,137 @@
+import HTTP_STATUS from '../utils/http.utils.js';
+import { ENTITY_API, USERS_API } from '../config.js';
+import { jwtDecode } from 'jwt-decode';
+
+/**
+ * Middleware pour vérifier l'existence d'un utilisateur et récupérer ses informations.
+ */
+export const verifyUserExist = async (req, res, next) => {
+    try {
+        // 1. Extraire le token JWT
+        const { authorization } = req.headers;
+        if (!authorization || !authorization.startsWith('Bearer ')) {
+            return sendErrorResponse(res, HTTP_STATUS.UN_AUTHORIZED);
+        }
+
+        const token = authorization.split(' ')[1];
+        if (!token) {
+            return sendErrorResponse(res, HTTP_STATUS.UN_AUTHORIZED, 'Token manquant ou malformé.');
+        }
+
+        // 2. Vérifier la validité du token auprès de l'API
+        const isTokenValid = await verifyToken(token);
+        if (!isTokenValid) {
+            return sendErrorResponse(res, HTTP_STATUS.UN_AUTHORIZED, 'Token invalide.');
+        }
+
+        // 3. Décoder le token pour extraire les informations utilisateur
+        const decodedToken = jwtDecode(token);
+        if (!decodedToken?.user_id) {
+            return sendErrorResponse(res, HTTP_STATUS.UN_AUTHORIZED, 'Token décodé invalide.');
+        }
+
+        // 4. Récupérer les informations de l'employé
+        const employee = await getEmployee(decodedToken.user_id, token);
+        if (!employee?.id) {
+            return sendErrorResponse(res, HTTP_STATUS.UN_AUTHORIZED, "L'utilisateur n'est pas un employé valide.");
+        }
+
+        // 5. Ajouter les informations de l'employé à la requête
+        req.employeeId = employee.id;
+
+        // if (req.method === 'POST') {
+        //     req.body.createdBy = employee.id;
+        // } else if (['PATCH', 'DELETE'].includes(req.method)) {
+        //     req.body.updatedBy = employee.id;
+        // }
+        // 6. Ajouter les attributs createdBy ou updatedBy selon la méthode HTTP
+        if (req.method === 'POST') {
+            if (!req.body) {
+                // Si req.body n'existe pas, ajouter createdBy directement sur req
+                req.createdBy = employee.id;
+            } else {
+                // Sinon, ajouter createdBy dans req.body
+                req.body.createdBy = employee.id;
+            }
+        } else if (['PATCH', 'DELETE'].includes(req.method)) {
+            if (!req.body) {
+                // Si req.body n'existe pas, ajouter updatedBy directement sur req
+                req.updatedBy = employee.id;
+            } else {
+                // Sinon, ajouter updatedBy dans req.body
+                req.body.updatedBy = employee.id;
+            }
+        }
+
+        // Passer au middleware suivant
+        next();
+    } catch (error) {
+        console.error('Erreur dans verifyUserExist:', error.message);
+        return sendErrorResponse(res, HTTP_STATUS.SERVEUR_ERROR, 'Une erreur interne est survenue.');
+    }
+};
+
+/**
+ * Vérifie la validité du token auprès de l'API USERS_API.
+ * @param {string} token - Le token JWT à vérifier.
+ * @returns {boolean} - True si le token est valide, false sinon.
+ */
+const verifyToken = async (token) => {
+    const url = `${USERS_API}/gateway/token/verify/`;
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+    };
+
+    try {
+        const response = await fetch(url, requestOptions);
+        return response.ok; // Retourne true si le statut HTTP est 2xx
+    } catch (error) {
+        console.error('Erreur lors de la vérification du token:', error.message);
+        return false;
+    }
+};
+
+/**
+ * Récupère les informations de l'employé depuis l'API ENTITY_API.
+ * @param {string} userId - L'ID de l'utilisateur.
+ * @param {string} token - Le token JWT pour l'authentification.
+ * @returns {Object|null} - Les données de l'employé ou null si non trouvé.
+ */
+const getEmployee = async (userId, token) => {
+    if (!userId) return null;
+
+    const url = `${ENTITY_API}/employees/?userId=${userId}`;
+    const requestOptions = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const response = await fetch(url, requestOptions);
+        if (response.status === 200) {
+            const result = await response.json();
+            return result?.data?.[0] || null; // Retourne le premier employé trouvé ou null
+        }
+        return null;
+    } catch (error) {
+        console.error('Erreur lors de la récupération des données de l\'employé:', error.message);
+        return null;
+    }
+};
+
+/**
+ * Envoie une réponse d'erreur standardisée.
+ * @param {Response} res - L'objet de réponse HTTP.
+ * @param {Object} httpStatus - L'objet contenant le code et le message d'erreur.
+ * @param {string} [customMessage] - Un message d'erreur personnalisé (optionnel).
+ */
+const sendErrorResponse = (res, httpStatus, customMessage = null) => {
+    return res.status(httpStatus.statusCode).json({
+        error: customMessage || httpStatus.message,
+    });
+};
