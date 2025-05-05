@@ -56,7 +56,7 @@ COPY . .
 
 
 # Générer le client Prisma
-RUN npx prisma generate
+RUN npx prisma migrate
 
 # RUN npm install prisma --save-dev --force
 # RUN npm install express --force

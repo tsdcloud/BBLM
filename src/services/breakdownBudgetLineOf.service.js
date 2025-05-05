@@ -279,54 +279,7 @@ export const getBreakdownBudgetLineOfByIdService = async (id) => {
  * @param body 
  * @returns 
  */
-// export const updateBreakdownBudgetLineOfService = async (id, body) => {
-//     try {
-//         // Étape 1 : Vérifier l'existence de l'enregistrement
-//         const currentYear = new Date().getFullYear();
 
-//         // Rechercher la ligne budgétaire correspondante
-//         const existingBreakdownBudgetLineOf = await breakdownBudgetLineOfClient.findUnique({
-//             where: { id },
-//         });
-
-//         // S'assurer que la ligne budgétaire existe
-//         if (!existingBreakdownBudgetLineOf) {
-//             throw new Error("Breakdown budget line not found.");
-//         }
-
-//         // Étape 2 : Mettre à jour l'enregistrement
-//         const updatedBreakdownBudgetLineOf = await breakdownBudgetLineOfClient.update({
-//             where: { id },
-//             data: {
-//                 budgetLineOfId: body.budgetLineOfId || existingBreakdownBudgetLineOf.budgetLineOfId,
-//                 month: body.month ? body.month : existingBreakdownBudgetLineOf.month,
-//                 estimatedAmount: body.estimatedAmount ? body.estimatedAmount : existingBreakdownBudgetLineOf.estimatedAmount,
-//                 realAmount: body.realAmount ? body.realAmount : existingBreakdownBudgetLineOf.realAmount,
-//                 updatedBy: body.updatedBy, // Obligatoire
-//                 updatedAt: new Date(),
-//             },
-//             include: {
-//                 budgetLineOf: {
-//                     include: {
-//                         budgetLineName: {
-//                             include: {
-//                                 majorBudgetLine: true, // Inclure la relation majorBudgetLine
-//                             },
-//                         },
-//                     },
-//                 },
-//             },
-//         });
-
-//         // Retourner la ligne budgétaire mise à jour
-//         return updatedBreakdownBudgetLineOf;
-
-//     } catch (error) {
-//         // Gérer les erreurs et les afficher dans la console
-//         console.error("Error in updateBreakdownBudgetLineOfService:", error);
-//         throw new Error(`Failed to update budget line: ${error.message}`);
-//     }
-// };
 export const updateBreakdownBudgetLineOfService = async (id, body) => {
     try {
         // Rechercher l'enregistrement existant

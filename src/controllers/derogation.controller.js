@@ -1,14 +1,12 @@
-import { createMajorBudgetLineService,
-    getAllMajorBudgetLineService,
-    getMajorBudgetLineByIdService,
-    deleteMajorBudgetLineServices,
-    restoreMajorBudgetLineServices,
-    analyseMajorBudgetLineService,
-    updateMajorBudgetLineService } from "../services/majorBudgetLine.service.js";
+import { createDerogationService,
+    getAllDerogationService,
+    getDerogationByIdService,
+    deleteDerogationServices,
+    restoreDerogationServices,
+    updateDerogationService } from "../services/derogation.service.js";
 import HTTP_STATUS from "../utils/http.utils.js";
-import validateQueryParams from "../validations/majorBudgetLine.validation.js";
+import validateQueryParams from "../validations/derogation.validation.js";
 import { validationResult, matchedData } from 'express-validator';
-
 
 /**
  * 
@@ -16,15 +14,15 @@ import { validationResult, matchedData } from 'express-validator';
  * @param res 
  * @returns 
  */
-export const createMajorBudgetLineController = async (req, res) => {
+export const createDerogationController = async (req, res) => {
     try {
         // Convertir le champ "name" en lowercase
-        req.body.name = req.body.name.toLowerCase();
+        req.body.description = req.body.description.toLowerCase();
 
-        const majorBudgetLine = await createMajorBudgetLineService(req.body);
+        const derogation = await createDerogationService(req.body);
         res
             .status(HTTP_STATUS.CREATED.statusCode)
-            .send({ success: true, data: majorBudgetLine });
+            .send({ success: true, data: derogation });
     } catch (error) {
         console.error(error);
         res
@@ -33,8 +31,6 @@ export const createMajorBudgetLineController = async (req, res) => {
     }
 };
 
-
-
 /**
  * 
  * @param req 
@@ -42,7 +38,7 @@ export const createMajorBudgetLineController = async (req, res) => {
  * @returns 
  */
 // Controller.js
-export const getAllMajorBudgetLineController = async (req, res) => {
+export const getAllDerogationController = async (req, res) => {
     try {
         // Validation des paramètres
         await Promise.all(validateQueryParams.map(validation => validation.run(req)));
@@ -59,7 +55,7 @@ export const getAllMajorBudgetLineController = async (req, res) => {
         const validatedParams = matchedData(req, { locations: ['query'] });
 
         // Appel du service avec les paramètres validés
-        const result = await getAllMajorBudgetLineService(validatedParams);
+        const result = await getAllDerogationService(validatedParams);
         res.status(200).json(result);
     } catch (error) {
         res.status(500).json({
@@ -69,14 +65,13 @@ export const getAllMajorBudgetLineController = async (req, res) => {
     }
 };
 
-
 /**
  * 
  * @param req
  * @param res 
  * @returns 
  */
-export const getMajorBudgetLineByIdController = async (req, res) => {
+export const getDerogationByIdController = async (req, res) => {
     let { id } = req.params;
     console.log(id);
 
@@ -86,9 +81,9 @@ export const getMajorBudgetLineByIdController = async (req, res) => {
     }
 
     try {
-        let majorBudgetLine = await getMajorBudgetLineByIdService(id);
+        let derogation = await getDerogationByIdService(id);
         res
-        .send(majorBudgetLine)
+        .send(derogation)
         .status(HTTP_STATUS.OK.statusCode);
         return;
     } catch (error) {
@@ -104,7 +99,7 @@ export const getMajorBudgetLineByIdController = async (req, res) => {
  * @param req 
  * @param res 
  */
-export const updateMajorBudgetLineController = async (req, res) => {
+export const updateDerogationController = async (req, res) => {
     try {
         // Vérifier que "updatedBy" est présent
         if (!req.body.updatedBy) {
@@ -119,12 +114,12 @@ export const updateMajorBudgetLineController = async (req, res) => {
         }
 
         // Appeler le service pour mettre à jour la ligne budgétaire
-        const majorBudgetLine = await updateMajorBudgetLineService(req.params.id, req.body);
+        const derogation = await updateDerogationService(req.params.id, req.body);
 
         // Envoyer la réponse avec succès
         res
             .status(HTTP_STATUS.OK.statusCode)
-            .send({ success: true, data: majorBudgetLine });
+            .send({ success: true, data: derogation });
     } catch (error) {
         console.error(error);
         res
@@ -133,19 +128,18 @@ export const updateMajorBudgetLineController = async (req, res) => {
     }
 };
 
-
 /**
  * 
  * @param req 
  * @param res 
  */
-export const deleteMajorBudgetLineController = async (req, res) => {
+export const deleteDerogationController = async (req, res) => {
     try {
         // Appeler le service pour effectuer le soft delete
-        const majorBudgetLine = await deleteMajorBudgetLineServices(req.params.id, req.body);
+        const derogation = await deleteDerogationServices(req.params.id, req.body);
 
         // Vérifier si l'enregistrement a été trouvé et désactivé
-        if (!majorBudgetLine) {
+        if (!derogation) {
             return res
                 .status(HTTP_STATUS.NOT_FOUND.statusCode)
                 .send({ error: true, message: "Major budget line not found." });
@@ -163,17 +157,16 @@ export const deleteMajorBudgetLineController = async (req, res) => {
     }
 };
 
-
 /**
  * 
  * @param req 
  * @param res 
  */
-export const restoreMajorBudgetLineController = async (req, res) => {
+export const restoreDerogationController = async (req, res) => {
     try {
-        let majorBudgetLine = await restoreMajorBudgetLineServices(req.params.id, req.body);
+        let derogation = await restoreDerogationServices(req.params.id, req.body);
         res
-        .send(majorBudgetLine)
+        .send(derogation)
         .status(HTTP_STATUS.NO_CONTENT.statusCode);
         return;
     } catch (error) {
@@ -184,30 +177,3 @@ export const restoreMajorBudgetLineController = async (req, res) => {
     }
 }
 
-
-export const getAnalyseMajorBudgetLineController = async (req, res) => {
-    try {
-        // Vérifier les erreurs de validation
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-
-        // Extraire les paramètres validés
-        const { services, year, startMonth, endMonth } = req.body;
-
-        // Appeler le service
-        const results = await analyseMajorBudgetLineService({
-            services,
-            year,
-            startMonth,
-            endMonth,
-        });
-
-        // Renvoyer les résultats
-        res.status(200).json(results);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Une erreur est survenue lors de l'analyse." });
-    }
-};

@@ -13,6 +13,7 @@ import majorBudgetLine from './routes/majorBudgetLine.route.js';
 import budgetLineName from './routes/budgetLineName.route.js';
 import budgetLineOf from './routes/budgetLineOf.route.js';
 import breakdownBudgetLineOf from './routes/breakdownBudgetLineOf.route.js';
+import derogation from './routes/Derogation.route.js';
 import { verifyUserExist } from './middlewares/verifyToken.middleware.js';
 import { rateLimitAndTimeout } from './middlewares/ratelimiter.middleware.js';
 
@@ -52,12 +53,13 @@ app.use(morgan('combined', { stream: accessLogStream }));
 app.get('/api/', (req, res) => {
     res.send('Bienvenue sur notre API de ligne budgétaire !');
 });
-app.use(verifyUserExist); // Middleware d'authentification
+// app.use(verifyUserExist); // Middleware d'authentification
 app.use(rateLimitAndTimeout); // Middleware de limitation de débit
 app.use("/api/major-budget-lines", majorBudgetLine);
 app.use("/api/budget-line-names", budgetLineName);
 app.use("/api/budget-line-ofs", budgetLineOf);
 app.use("/api/breakdown-budget-lineOfs", breakdownBudgetLineOf);
+app.use("/api/derogations", derogation);
 
 // Middleware de gestion des erreurs global
 app.use((err, req, res, next) => {

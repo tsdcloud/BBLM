@@ -61,6 +61,8 @@ model BreakdownBudgetLineOf {
   month            Month
   estimatedAmount  Decimal
   realAmount       Decimal?
+  derogationLigneDebited    DerogationLigne[] @relation("BreakdownBudgetLineOfDebited")
+  derogationLigneCredited   DerogationLigne[] @relation("BreakdownBudgetLineOfCredited")
   createdBy        String
   updatedBy        String?
   createdAt        DateTime @default(now())
@@ -69,6 +71,35 @@ model BreakdownBudgetLineOf {
   // Contrainte d'unicité composite sur budgetLineOfId et month
   @@unique([budgetLineOfId, month])
 }
+
+model Derogation{
+  id          String  @id  @default(uuid())
+  numRef      String  @unique
+  description   String?  
+  createdBy   String
+  updatedBy   String?
+  derogationLignes  DerogationLigne[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime  @updatedAt
+  isActive  Boolean @default(true)
+}
+model DerogationLigne{
+  id          String  @id  @default(uuid())
+  numRef      String  @unique
+  derogationId String
+  derogation     Derogation? @relation(fields: [derogationId], references: [id])
+  breakdownBudgetLineOfDebitedId    String
+  breakdownBudgetLineOfDebited      BreakdownBudgetLineOf @relation("BreakdownBudgetLineOfDebited", fields: [breakdownBudgetLineOfDebitedId], references: [id])
+  breakdownBudgetLineOfCreditedId   String
+  breakdownBudgetLineOfCredited     BreakdownBudgetLineOf @relation("BreakdownBudgetLineOfCredited", fields: [breakdownBudgetLineOfCreditedId], references: [id])
+  Amount       Decimal
+  createdBy   String
+  updatedBy   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime  @updatedAt
+  isActive  Boolean @default(true)
+}
+
 
 enum Month { // ✅ Nom simplifié
   JANVIER
