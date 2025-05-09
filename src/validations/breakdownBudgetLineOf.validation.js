@@ -40,6 +40,7 @@ export const validateQueryParams = [
         "JUILLET", "AOUT", "SEPTEMBRE", "OCTOBRE", "NOVEMBRE", "DECEMBRE"
     ])
     .withMessage("The month field must be a valid month."),
+    query('operationMonth').optional().isIn(['sup', 'inf']).withMessage('operationMonth must be either sup or inf'),
     query('estimatedAmount').optional().isDecimal({ decimal_digits: "2" }) // Vérifie que le nombre a exactement 2 chiffres après la virgule
     .withMessage("The estimatedAmount must have exactly 2 decimal places."),
     query('estimatedAmount_down').optional().isDecimal({ decimal_digits: "2" }) // Vérifie que le nombre a exactement 2 chiffres après la virgule

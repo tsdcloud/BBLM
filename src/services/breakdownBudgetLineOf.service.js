@@ -83,6 +83,7 @@ export const getAllBreakdownBudgetLineOfService = async (params = {}) => {
             budgetLineOfId,
             month,
             end_month,
+            operationMonth,
             estimatedAmount,
             estimatedAmount_down,
             realAmount,
@@ -121,22 +122,60 @@ export const getAllBreakdownBudgetLineOfService = async (params = {}) => {
             "JUILLET", "AOUT", "SEPTEMBRE", "OCTOBRE", "NOVEMBRE", "DECEMBRE"
         ]);
 
-        if (month && end_month) {
-            if (!monthsSet.has(month.toUpperCase()) || !monthsSet.has(end_month.toUpperCase())) {
+        // if (month && end_month) {
+        //     if (!monthsSet.has(month.toUpperCase()) || !monthsSet.has(end_month.toUpperCase())) {
+        //         throw new Error("Invalid month name provided.");
+        //     }
+
+        //     const months = Array.from(monthsSet);
+        //     const startMonthIndex = months.indexOf(month.toUpperCase());
+        //     const endMonthIndex = months.indexOf(end_month.toUpperCase());
+
+        //     cleanFilters.month = { in: months.slice(startMonthIndex, endMonthIndex + 1) };
+        // } else if (month) {
+        //     if (!monthsSet.has(month.toUpperCase())) {
+        //         throw new Error("Invalid month name provided.");
+        //     }
+
+        //     cleanFilters.month = month.toUpperCase();
+        // }
+
+        const allMonths = Array.from(monthsSet);
+
+        if (month) {
+            const monthUpper = month.toUpperCase();
+            if (!monthsSet.has(monthUpper)) {
                 throw new Error("Invalid month name provided.");
             }
 
-            const months = Array.from(monthsSet);
-            const startMonthIndex = months.indexOf(month.toUpperCase());
-            const endMonthIndex = months.indexOf(end_month.toUpperCase());
+            // Gestion selon operationMonth
+            if (operationMonth === "inf") {
+                // Filtre du début de l'année jusqu'à monthUpper inclus
+                const index = allMonths.indexOf(monthUpper);
+                cleanFilters.month = { in: allMonths.slice(0, index + 1) };
+            } else if (operationMonth === "sup") {
+                // Filtre de monthUpper jusqu'à la fin de l'année
+                const index = allMonths.indexOf(monthUpper);
+                cleanFilters.month = { in: allMonths.slice(index) };
+            } else if (end_month) {
+                // Comportement original avec intervalle
+                const endMonthUpper = end_month.toUpperCase();
+                if (!monthsSet.has(endMonthUpper)) {
+                    throw new Error("Invalid end_month name provided.");
+                }
 
-            cleanFilters.month = { in: months.slice(startMonthIndex, endMonthIndex + 1) };
-        } else if (month) {
-            if (!monthsSet.has(month.toUpperCase())) {
-                throw new Error("Invalid month name provided.");
+                const startIdx = allMonths.indexOf(monthUpper);
+                const endIdx = allMonths.indexOf(endMonthUpper);
+
+                if (startIdx > endIdx) {
+                    throw new Error("Start month must be before or equal to end month.");
+                }
+
+                cleanFilters.month = { in: allMonths.slice(startIdx, endIdx + 1) };
+            } else {
+                // Cas simple : un seul mois
+                cleanFilters.month = monthUpper;
             }
-
-            cleanFilters.month = month.toUpperCase();
         }
 
         // Filtres textuels
