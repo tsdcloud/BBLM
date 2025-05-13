@@ -53,7 +53,7 @@ app.use(morgan('combined', { stream: accessLogStream }));
 app.get('/api/', (req, res) => {
     res.send('Bienvenue sur notre API de ligne budgétaire !');
 });
-// app.use(verifyUserExist); // Middleware d'authentification
+app.use(verifyUserExist); // Middleware d'authentification
 app.use(rateLimitAndTimeout); // Middleware de limitation de débit
 app.use("/api/major-budget-lines", majorBudgetLine);
 app.use("/api/budget-line-names", budgetLineName);

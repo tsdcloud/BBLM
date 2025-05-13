@@ -27,7 +27,7 @@ export const createDerogationController = async (req, res) => {
         console.error(error);
         res
             .status(HTTP_STATUS.INTERNAL_SERVER_ERROR.statusCode)
-            .send({ error: true, message: "An error occurred while creating the major budget line." });
+            .send({ error: true, message: "An error occurred while creating the derogation." });
     }
 };
 
@@ -124,7 +124,7 @@ export const updateDerogationController = async (req, res) => {
         console.error(error);
         res
             .status(HTTP_STATUS.INTERNAL_SERVER_ERROR.statusCode)
-            .send({ error: true, message: "An error occurred while updating the major budget line." });
+            .send({ error: true, message: "An error occurred while updating the derogation." });
     }
 };
 
@@ -142,7 +142,7 @@ export const deleteDerogationController = async (req, res) => {
         if (!derogation) {
             return res
                 .status(HTTP_STATUS.NOT_FOUND.statusCode)
-                .send({ error: true, message: "Major budget line not found." });
+                .send({ error: true, message: "Derogation line not found." });
         }
 
         // Réponse avec un statut 204 (No Content)
@@ -153,7 +153,7 @@ export const deleteDerogationController = async (req, res) => {
         console.error(error);
         res
             .status(HTTP_STATUS.INTERNAL_SERVER_ERROR.statusCode)
-            .send({ error: true, message: "An error occurred while deleting the major budget line." });
+            .send({ error: true, message: "An error occurred while deleting the derogation." });
     }
 };
 
