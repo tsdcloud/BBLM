@@ -125,23 +125,6 @@ export const getAllBreakdownBudgetLineOfService = async (params = {}) => {
             "JUILLET", "AOUT", "SEPTEMBRE", "OCTOBRE", "NOVEMBRE", "DECEMBRE"
         ]);
 
-        // if (month && end_month) {
-        //     if (!monthsSet.has(month.toUpperCase()) || !monthsSet.has(end_month.toUpperCase())) {
-        //         throw new Error("Invalid month name provided.");
-        //     }
-
-        //     const months = Array.from(monthsSet);
-        //     const startMonthIndex = months.indexOf(month.toUpperCase());
-        //     const endMonthIndex = months.indexOf(end_month.toUpperCase());
-
-        //     cleanFilters.month = { in: months.slice(startMonthIndex, endMonthIndex + 1) };
-        // } else if (month) {
-        //     if (!monthsSet.has(month.toUpperCase())) {
-        //         throw new Error("Invalid month name provided.");
-        //     }
-
-        //     cleanFilters.month = month.toUpperCase();
-        // }
 
         const allMonths = Array.from(monthsSet);
 
@@ -186,13 +169,13 @@ export const getAllBreakdownBudgetLineOfService = async (params = {}) => {
         if (budgetLineOfId) cleanFilters.budgetLineOfId = budgetLineOfId;
 
         // Filtres numériques (montants)
-        const estimatedAmountFilter = handleRangeFilter('estimatedAmount', estimatedAmount, estimatedAmount_down, operationEstimatedAmount);
+        const estimatedAmountFilter = handleRangeFilter(estimatedAmount, estimatedAmount_down, operationEstimatedAmount);
         if (estimatedAmountFilter) cleanFilters.estimatedAmount = estimatedAmountFilter;
 
-        const realAmountFilter = handleRangeFilter('realAmount', realAmount, realAmount_down, operationRealAmount);
+        const realAmountFilter = handleRangeFilter(realAmount, realAmount_down, operationRealAmount);
         if (realAmountFilter) cleanFilters.realAmount = realAmountFilter;
 
-        const purchaseOrderAmountFilter = handleRangeFilter('purchaseOrderAmount', purchaseOrderAmount, purchaseOrderAmount_down, operationpurchaseOrderAmount);
+        const purchaseOrderAmountFilter = handleRangeFilter(purchaseOrderAmount, purchaseOrderAmount_down, operationpurchaseOrderAmount);
         if (purchaseOrderAmountFilter) cleanFilters.purchaseOrderAmount = purchaseOrderAmountFilter;
 
         // Filtres de dates
@@ -338,8 +321,6 @@ export const updateBreakdownBudgetLineOfService = async (id, body) => {
         }
 
         // Vérifier si realAmount est fourni dans la requête
-        // if ((typeof body.realAmount === 'number' && !isNaN(body.realAmount)) ||
-        //     (typeof body.purchaseOrderAmount === 'number' && !isNaN(body.purchaseOrderAmount))) {
         if ((body.realAmount !== undefined && !isNaN(body.realAmount)) ||
             (body.purchaseOrderAmount !== undefined && !isNaN(body.purchaseOrderAmount))) {
             // Extraire l'année et le mois actuels
