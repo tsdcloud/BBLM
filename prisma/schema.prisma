@@ -61,6 +61,7 @@ model BreakdownBudgetLineOf {
   month            Month
   estimatedAmount  Decimal
   realAmount       Decimal?
+  purchaseOrderAmount  Decimal?
   derogationLigneDebited    DerogationLigne[] @relation("BreakdownBudgetLineOfDebited")
   derogationLigneCredited   DerogationLigne[] @relation("BreakdownBudgetLineOfCredited")
   createdBy        String

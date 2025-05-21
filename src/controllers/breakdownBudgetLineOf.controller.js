@@ -120,9 +120,81 @@ export const getBreakdownBudgetLineOfByIdController = async (req, res) => {
 /**
  * Contrôleur pour mettre à jour une ligne budgétaire détaillée.
  */
+export const updateBreakdownBudgetLineOfController = async (req, res) => {
+    try {
+        if (!req.body.updatedBy) {
+            return res.status(HTTP_STATUS.BAD_REQUEST.statusCode).json({
+                success: false,
+                message: "updatedBy is required.",
+                description: HTTP_STATUS.BAD_REQUEST.description,
+            });
+        }
+
+        if (req.body.name) {
+            req.body.name = req.body.name.toLowerCase();
+        }
+
+        const updatedBudgetLineOf = await updateBreakdownBudgetLineOfService(req.params.id, req.body);
+
+        return res.status(HTTP_STATUS.OK.statusCode).json({
+            success: true,
+            data: updatedBudgetLineOf,
+            message: "Budget line updated successfully.",
+        });
+
+    } catch (error) {
+        console.error("Error in updateBreakdownBudgetLineOfController:", error);
+
+        switch (error.message) {
+            case "Budget line not found.":
+                return res.status(HTTP_STATUS.NOT_FOUND.statusCode).json({
+                    success: false,
+                    message: error.message,
+                    description: HTTP_STATUS.NOT_FOUND.description,
+                });
+
+            case "You can't update a budget line from another year.":
+                return res.status(HTTP_STATUS.FORBIDDEN.statusCode).json({
+                    success: false,
+                    message: error.message,
+                    description: HTTP_STATUS.FORBIDDEN.description,
+                });
+
+            case "Total used (real + purchase order) cannot exceed estimated budget.":
+                return res.status(HTTP_STATUS.CONFLICT.statusCode).json({
+                    success: false,
+                    message: error.message,
+                    description: HTTP_STATUS.CONFLICT.description,
+                });
+
+            case "You cannot pay more than the purchase order amount.":
+                return res.status(HTTP_STATUS.CONFLICT.statusCode).json({
+                    success: false,
+                    message: error.message,
+                    description: HTTP_STATUS.CONFLICT.description,
+                });
+
+            default:
+                if (error.message.startsWith("The current date")) {
+                    return res.status(HTTP_STATUS.FORBIDDEN.statusCode).json({
+                        success: false,
+                        message: error.message,
+                        description: HTTP_STATUS.FORBIDDEN.description,
+                    });
+                }
+
+                return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR.statusCode).json({
+                    success: false,
+                    message: "An unexpected error occurred.",
+                    description: HTTP_STATUS.INTERNAL_SERVER_ERROR.description,
+                    error: error.message,
+                });
+        }
+    }
+};
 // export const updateBreakdownBudgetLineOfController = async (req, res) => {
 //     try {
-//         // 1. Vérifier que "updatedBy" est présent dans le corps de la requête
+//         // Vérifier que "updatedBy" est présent dans le corps de la requête
 //         if (!req.body.updatedBy) {
 //             return res.status(HTTP_STATUS.BAD_REQUEST.statusCode).send({
 //                 success: false,
@@ -131,15 +203,15 @@ export const getBreakdownBudgetLineOfByIdController = async (req, res) => {
 //             });
 //         }
 
-//         // 2. Convertir le champ "name" en lowercase s'il est fourni
+//         // Convertir le champ "name" en lowercase s'il est fourni
 //         if (req.body.name) {
 //             req.body.name = req.body.name.toLowerCase();
 //         }
 
-//         // 3. Appeler le service pour mettre à jour la ligne budgétaire
+//         // Appeler le service pour mettre à jour la ligne budgétaire
 //         const updatedBudgetLineOf = await updateBreakdownBudgetLineOfService(req.params.id, req.body);
 
-//         // 4. Envoyer la réponse avec succès
+//         // Envoyer la réponse avec succès
 //         return res.status(HTTP_STATUS.OK.statusCode).send({
 //             success: true,
 //             data: updatedBudgetLineOf,
@@ -148,7 +220,7 @@ export const getBreakdownBudgetLineOfByIdController = async (req, res) => {
 //     } catch (error) {
 //         console.error("Error in updateBreakdownBudgetLineOfController:", error);
 
-//         // 5. Gestion des erreurs spécifiques
+//         // Gestion des erreurs spécifiques
 //         if (error.message.includes("Budget line not found")) {
 //             return res.status(HTTP_STATUS.NOT_FOUND.statusCode).send({
 //                 success: false,
@@ -165,23 +237,15 @@ export const getBreakdownBudgetLineOfByIdController = async (req, res) => {
 //             });
 //         }
 
-//         if (error.message.includes("This Budget Line already exists for this year")) {
+//         if (error.message.includes("The current date")) {
 //             return res.status(HTTP_STATUS.BAD_REQUEST.statusCode).send({
 //                 success: false,
-//                 message: "This Budget Line already exists for this year.",
+//                 message: error.message, // Utiliser directement le message d'erreur du service
 //                 description: HTTP_STATUS.BAD_REQUEST.description,
 //             });
 //         }
 
-//         if (error.message.includes("Invalid or missing creation date")) {
-//             return res.status(HTTP_STATUS.BAD_REQUEST.statusCode).send({
-//                 success: false,
-//                 message: "Invalid or missing creation date for the budget line.",
-//                 description: HTTP_STATUS.BAD_REQUEST.description,
-//             });
-//         }
-
-//         // 6. Erreur par défaut pour les cas non gérés
+//         // Erreur par défaut pour les cas non gérés
 //         return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR.statusCode).send({
 //             success: false,
 //             message: "An unexpected error occurred.",
@@ -189,67 +253,6 @@ export const getBreakdownBudgetLineOfByIdController = async (req, res) => {
 //         });
 //     }
 // };
-export const updateBreakdownBudgetLineOfController = async (req, res) => {
-    try {
-        // Vérifier que "updatedBy" est présent dans le corps de la requête
-        if (!req.body.updatedBy) {
-            return res.status(HTTP_STATUS.BAD_REQUEST.statusCode).send({
-                success: false,
-                message: "updatedBy is required.",
-                description: HTTP_STATUS.BAD_REQUEST.description,
-            });
-        }
-
-        // Convertir le champ "name" en lowercase s'il est fourni
-        if (req.body.name) {
-            req.body.name = req.body.name.toLowerCase();
-        }
-
-        // Appeler le service pour mettre à jour la ligne budgétaire
-        const updatedBudgetLineOf = await updateBreakdownBudgetLineOfService(req.params.id, req.body);
-
-        // Envoyer la réponse avec succès
-        return res.status(HTTP_STATUS.OK.statusCode).send({
-            success: true,
-            data: updatedBudgetLineOf,
-            message: "Budget line updated successfully.",
-        });
-    } catch (error) {
-        console.error("Error in updateBreakdownBudgetLineOfController:", error);
-
-        // Gestion des erreurs spécifiques
-        if (error.message.includes("Budget line not found")) {
-            return res.status(HTTP_STATUS.NOT_FOUND.statusCode).send({
-                success: false,
-                message: "Budget line not found.",
-                description: HTTP_STATUS.NOT_FOUND.description,
-            });
-        }
-
-        if (error.message.includes("You can't update a budget line from another year")) {
-            return res.status(HTTP_STATUS.BAD_REQUEST.statusCode).send({
-                success: false,
-                message: "You can't update a budget line from another year.",
-                description: HTTP_STATUS.BAD_REQUEST.description,
-            });
-        }
-
-        if (error.message.includes("The current date")) {
-            return res.status(HTTP_STATUS.BAD_REQUEST.statusCode).send({
-                success: false,
-                message: error.message, // Utiliser directement le message d'erreur du service
-                description: HTTP_STATUS.BAD_REQUEST.description,
-            });
-        }
-
-        // Erreur par défaut pour les cas non gérés
-        return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR.statusCode).send({
-            success: false,
-            message: "An unexpected error occurred.",
-            description: HTTP_STATUS.INTERNAL_SERVER_ERROR.description,
-        });
-    }
-};
 
 /**
  * Contrôleur pour supprimer une ligne budgétaire détaillée (soft delete).

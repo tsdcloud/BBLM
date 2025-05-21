@@ -50,7 +50,11 @@ export const validateQueryParams = [
     .withMessage("The realAmount must have exactly 2 decimal places."),
     query('realAmount_down').optional().isDecimal({ decimal_digits: "2" }) // Vérifie que le nombre a exactement 2 chiffres après la virgule
     .withMessage("The realAmount_down must have exactly 2 decimal places."),
-    query('operationRealAmount').optional().isIn(['sup', 'inf']).withMessage('operationRealAmount must be either sup or inf'),
+    query('purchaseOrderAmount').optional().isDecimal({ decimal_digits: "2" }) // Vérifie que le nombre a exactement 2 chiffres après la virgule
+    .withMessage("The purchaseOrderAmount must have exactly 2 decimal places."),
+    query('purchaseOrderAmount_down').optional().isDecimal({ decimal_digits: "2" }) // Vérifie que le nombre a exactement 2 chiffres après la virgule
+    .withMessage("The purchaseOrderAmount_down must have exactly 2 decimal places."),
+    query('operationpurchaseOrderAmount').optional().isIn(['sup', 'inf']).withMessage('operationpurchaseOrderAmount must be either sup or inf'),
     query('createdBy').optional().isString().withMessage('CreatedBy must be a string'),
     query('updatedBy').optional().isString().withMessage('UpdatedBy must be a string'),
     query('createdAt').optional().isISO8601().withMessage('CreatedAt must be a valid ISO date'),
@@ -92,6 +96,13 @@ export const createBreakdownBudgetLineOf = [
         .withMessage("The realAmount field is required.")
         .isDecimal({ decimal_digits: "2" }) // Vérifie que le nombre a exactement 2 chiffres après la virgule
         .withMessage("The realAmount must have exactly 2 decimal places."),
+    // Validation du champ purchaseOrderAmount
+    body("purchaseOrderAmount")
+        .optional()
+        .notEmpty()
+        .withMessage("The purchaseOrderAmount field is required.")
+        .isDecimal({ decimal_digits: "2" }) // Vérifie que le nombre a exactement 2 chiffres après la virgule
+        .withMessage("The purchaseOrderAmount must have exactly 2 decimal places."),
 
     // // Validation du champ createdBy
     // body("createdBy")
@@ -129,6 +140,13 @@ export const updateBreakdownBudgetLineOf = [
         ])
         .withMessage("The month field must be a valid month."),
 
+    // Validation du champ amount
+    body("amount")
+        .optional()
+        .notEmpty()
+        .withMessage("The amount field is required.")
+        .isDecimal({ decimal_digits: "2" }) // Vérifie que le nombre a exactement 2 chiffres après la virgule
+        .withMessage("The amount must have exactly 2 decimal places."),
     // Validation du champ estimatedAmount
     body("estimatedAmount")
         .optional()
@@ -144,6 +162,13 @@ export const updateBreakdownBudgetLineOf = [
         .withMessage("The realAmount field is required.")
         .isDecimal({ decimal_digits: "2" }) // Vérifie que le nombre a exactement 2 chiffres après la virgule
         .withMessage("The realAmount must have exactly 2 decimal places."),
+    // Validation du champ purchaseOrderAmount
+    body("purchaseOrderAmount")
+        .optional()
+        .notEmpty()
+        .withMessage("The purchaseOrderAmount field is required.")
+        .isDecimal({ decimal_digits: "2" }) // Vérifie que le nombre a exactement 2 chiffres après la virgule
+        .withMessage("The purchaseOrderAmount must have exactly 2 decimal places."),
 
     // // Validation obligatoire pour "updatedBy"
     // body("updatedBy")

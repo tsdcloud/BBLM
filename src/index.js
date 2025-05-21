@@ -13,7 +13,7 @@ import majorBudgetLine from './routes/majorBudgetLine.route.js';
 import budgetLineName from './routes/budgetLineName.route.js';
 import budgetLineOf from './routes/budgetLineOf.route.js';
 import breakdownBudgetLineOf from './routes/breakdownBudgetLineOf.route.js';
-import derogation from './routes/Derogation.route.js';
+import derogation from './routes/derogation.route.js';
 import { verifyUserExist } from './middlewares/verifyToken.middleware.js';
 import { rateLimitAndTimeout } from './middlewares/ratelimiter.middleware.js';
 

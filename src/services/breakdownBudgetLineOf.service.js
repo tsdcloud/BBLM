@@ -88,8 +88,11 @@ export const getAllBreakdownBudgetLineOfService = async (params = {}) => {
             estimatedAmount_down,
             realAmount,
             realAmount_down,
+            purchaseOrderAmount,
+            purchaseOrderAmount_down,
             operationEstimatedAmount,
             operationRealAmount,
+            operationpurchaseOrderAmount,
             createdBy,
             updatedBy,
             createdAt,
@@ -188,6 +191,9 @@ export const getAllBreakdownBudgetLineOfService = async (params = {}) => {
 
         const realAmountFilter = handleRangeFilter('realAmount', realAmount, realAmount_down, operationRealAmount);
         if (realAmountFilter) cleanFilters.realAmount = realAmountFilter;
+
+        const purchaseOrderAmountFilter = handleRangeFilter('purchaseOrderAmount', purchaseOrderAmount, purchaseOrderAmount_down, operationpurchaseOrderAmount);
+        if (purchaseOrderAmountFilter) cleanFilters.purchaseOrderAmount = purchaseOrderAmountFilter;
 
         // Filtres de dates
         const handleDateFilter = (date, bis, operation) => {
@@ -322,6 +328,7 @@ export const getBreakdownBudgetLineOfByIdService = async (id) => {
 export const updateBreakdownBudgetLineOfService = async (id, body) => {
     try {
         // Rechercher l'enregistrement existant
+        console.log(body);
         const existingBreakdownBudgetLineOf = await breakdownBudgetLineOfClient.findUnique({
             where: { id },
         });
@@ -331,7 +338,10 @@ export const updateBreakdownBudgetLineOfService = async (id, body) => {
         }
 
         // Vérifier si realAmount est fourni dans la requête
-        if (body.realAmount !== undefined && !isNaN(body.realAmount)) {
+        // if ((typeof body.realAmount === 'number' && !isNaN(body.realAmount)) ||
+        //     (typeof body.purchaseOrderAmount === 'number' && !isNaN(body.purchaseOrderAmount))) {
+        if ((body.realAmount !== undefined && !isNaN(body.realAmount)) ||
+            (body.purchaseOrderAmount !== undefined && !isNaN(body.purchaseOrderAmount))) {
             // Extraire l'année et le mois actuels
             const currentYear = new Date().getFullYear();
             const currentMonth = new Date().getMonth(); // Index de 0 (Janvier) à 11 (Décembre)
@@ -367,6 +377,28 @@ export const updateBreakdownBudgetLineOfService = async (id, body) => {
             if (currentYear === creationYear && currentMonth < recordMonthIndex) {
                 throw new Error(`The current date (${currentYear}-${currentMonth + 1}) is earlier than the record date (${creationYear}-${recordMonthIndex + 1}).`);
             }
+            const newRealAmount = body.realAmount ?? existingBreakdownBudgetLineOf.realAmount;
+            const newPurchaseOrderAmount = body.purchaseOrderAmount ?? existingBreakdownBudgetLineOf.purchaseOrderAmount;
+
+            const totalUsed = newRealAmount + newPurchaseOrderAmount;
+
+            if (totalUsed > existingBreakdownBudgetLineOf.estimatedAmount) {
+                throw new Error("Total used (real + purchase order) cannot exceed estimated budget.");
+            }
+        }
+        if (
+            body.amount !== undefined && 
+            !isNaN(body.amount)
+            ){
+            if(existingBreakdownBudgetLineOf.purchaseOrderAmount < body.amount){
+                throw new Error("You cannot pay more than the purchase order amount.");
+            }
+            existingBreakdownBudgetLineOf.purchaseOrderAmount = Number(existingBreakdownBudgetLineOf.purchaseOrderAmount) - Number(body.amount);
+            existingBreakdownBudgetLineOf.realAmount = Number(existingBreakdownBudgetLineOf.realAmount) + Number(body.amount);
+            console.log("body.amount : ", body.amount);
+            console.log("existingBreakdownBudgetLineOf.purchaseOrderAmount :", existingBreakdownBudgetLineOf.purchaseOrderAmount);
+            console.log("existingBreakdownBudgetLineOf.realAmount :", existingBreakdownBudgetLineOf.realAmount);
+
         }
 
         // Mettre à jour l'enregistrement
@@ -377,6 +409,7 @@ export const updateBreakdownBudgetLineOfService = async (id, body) => {
                 month: body.month ? body.month : existingBreakdownBudgetLineOf.month,
                 estimatedAmount: body.estimatedAmount !== undefined ? body.estimatedAmount : existingBreakdownBudgetLineOf.estimatedAmount,
                 realAmount: body.realAmount !== undefined ? body.realAmount : existingBreakdownBudgetLineOf.realAmount,
+                purchaseOrderAmount: body.purchaseOrderAmount !== undefined ? body.purchaseOrderAmount : existingBreakdownBudgetLineOf.purchaseOrderAmount,
                 updatedBy: body.updatedBy, // Obligatoire
                 updatedAt: new Date(),
             },
