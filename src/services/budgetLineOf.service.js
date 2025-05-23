@@ -335,7 +335,7 @@ export const getAllBudgetLineOfService = async (params = {}) => {
             limit = 100,
             skip = 0,
             order = 'asc', // Prisma utilise 'asc'/'desc' au lieu de 'ASC'/'DESC'
-            sortBy = 'createdAt',
+            sortBy = 'numRef',
             numRef,
             budgetLineNameId,
             createdBy,
@@ -346,9 +346,13 @@ export const getAllBudgetLineOfService = async (params = {}) => {
             updatedAt,
             updatedAtBis, // Nouveau paramètre pour l'intervalle supérieur sur updatedAt
             operationUpdatedAt,
+            year,
             isActive,
             ...filters
         } = params;
+
+        const currentYear = new Date().getFullYear();
+        const selectedYear = year || currentYear;
 
         const validatedLimit = Number(limit);
         const validatedSkip = Math.max(0, Number(skip)) || 0;
@@ -388,6 +392,16 @@ export const getAllBudgetLineOfService = async (params = {}) => {
             };
         } else if (createdAt && operationCreatedAt) {
             cleanFilters.createdAt = handleDateFilter(createdAt, operationCreatedAt);
+        }
+        // Appliquer le filtre par année uniquement si createdAt n'est pas fourni
+        if (!createdAt) {
+            const startOfYear = new Date(selectedYear, 0, 1);  // 1er janvier
+            const endOfYear = new Date(selectedYear, 11, 31, 23, 59, 59, 999); // 31 décembre
+
+            cleanFilters.createdAt = {
+                gte: startOfYear,
+                lte: endOfYear
+            };
         }
 
         // Gestion de l'intervalle pour updatedAt

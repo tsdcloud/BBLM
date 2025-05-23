@@ -36,8 +36,13 @@ export const validateQueryParams = [
     query('updatedAt').optional().isISO8601().withMessage('UpdatedAt must be a valid ISO date'),
     query('updatedAtBis').optional().isISO8601().withMessage('UpdatedAt must be a valid ISO date'),
     query('operationUpdatedAt').optional().isIn(['sup', 'inf']).withMessage('OperationUpdatedAt must be either sup or inf'),
+    // Valider l'année
+    query('year')
+        .optional()
+        .isInt({ min: 1900, max: new Date().getFullYear() + 1 })
+        .withMessage(`L'année doit être un nombre valide entre 1900 et ${new Date().getFullYear() + 1}.`),
     query('isActive').optional().isBoolean().withMessage('IsActive must be a boolean')
-  ];
+];
   
 
 export const createBudgetLineOf = [
