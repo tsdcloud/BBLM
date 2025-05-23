@@ -504,7 +504,7 @@ export const analyseMajorBudgetLineService = async ({ services, year, startMonth
         const majorBudgetLines = await prisma.majorBudgetLine.findMany({
             where: {
                 serviceId: { in: services },
-                isActive: true, // Condition pour MajorBudgetLine
+                // isActive: true, // Condition pour MajorBudgetLine
             },
             select: {
                 id: true,
@@ -513,9 +513,9 @@ export const analyseMajorBudgetLineService = async ({ services, year, startMonth
                 name: true,
                 serviceId: true, // Inclure serviceId ici
                 budgetLineNames: {
-                    where: {
-                        isActive: true, // Condition pour BudgetLineName
-                    },
+                    // where: {
+                    //     isActive: true, // Condition pour BudgetLineName
+                    // },
                     select: {
                         id: true,
                         numRef: true,
