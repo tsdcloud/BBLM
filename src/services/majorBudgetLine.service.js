@@ -540,6 +540,7 @@ export const analyseMajorBudgetLineService = async ({ services, year, startMonth
                                         month: true,
                                         estimatedAmount: true,
                                         realAmount: true,
+                                        purchaseOrderAmount: true,
                                     },
                                 },
                             },
@@ -567,12 +568,17 @@ export const analyseMajorBudgetLineService = async ({ services, year, startMonth
                             (sum, breakdown) => sum + (breakdown.realAmount?.toNumber() || 0),
                             0
                         );
+                        const totalPurchaseOrderAmount = budgetLineOf.breakdowns.reduce(
+                            (sum, breakdown) => sum + (breakdown.purchaseOrderAmount?.toNumber() || 0),
+                            0
+                        );
 
                         return {
                             id: budgetLineOf.id,
                             numRef: budgetLineOf.numRef || '',
                             estimatedAmount: totalEstimatedAmount,
                             realAmount: totalRealAmount,
+                            purchaseOrderAmount: totalPurchaseOrderAmount,
                         };
                     }),
                 })),
