@@ -41,7 +41,8 @@ FROM node:20.10
 LABEL maintainer="ysiaka@bfclimited.com"
 
 # Définir le répertoire de travail
-WORKDIR /App/Incident
+WORKDIR /App/BBLM
+
 
 # Copier package.json et package-lock.json
 COPY package*.json ./
@@ -63,7 +64,7 @@ RUN npx prisma migrate
 #RUN npx prisma migrate dev --name init
 
 # Exposer le port utilisé par l'application
-EXPOSE 4000
+EXPOSE 3000
 
 # Lancer l'application
 CMD ["node", "./src/index.js"]
