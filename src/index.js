@@ -33,7 +33,7 @@ const app = express();
 const corsOptions = {
     origin: process.env.ORIGIN,
     methods: process.env.METHODS.split(','), // Convertit "GET,POST" en ["GET", "POST"]
-    allowedHeaders: process.env.ALLOWEDHEADERS.split(','),
+    // allowedHeaders: process.env.ALLOWEDHEADERS.split(','),
   };
 
 app.use(cors(corsOptions));
