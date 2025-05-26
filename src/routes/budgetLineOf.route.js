@@ -6,7 +6,7 @@ import { createBudgetLineOfController,
     getBudgetLineOfByIdController,
     updateBudgetLineOfController,
     deleteBudgetLineOfController,
-    restoreBudgetLineOfController} from "../controllers/BudgetLineOf.controller.js";
+    restoreBudgetLineOfController} from "../controllers/budgetLineOf.controller.js";
 import {
     createBudgetLineOf,
     createBudgetLineOfBis,
