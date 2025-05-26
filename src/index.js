@@ -24,16 +24,25 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-// const  corsOptions = {
-//     // origin: '*',
-//     origin: process.env.ORIGIN,
-//     methods: process.env.METHODS,
-//     allowedHeaders: process.env.ALLOWEDHEADERS,
+
+// const corsOptions = {
+//     origin: process.env.ORIGIN.split(',').map(o => o.trim()),
+//     methods: process.env.METHODS.split(',').map(m => m.trim()), // Nettoyage des espaces
+//     allowedHeaders: process.env.ALLOWEDHEADERS.split(',').map(h => h.trim()), // Ajout manquant
+//     credentials: true, // Si vous utilisez des cookies
 // };
 const corsOptions = {
-    origin: process.env.ORIGIN,
-    methods: process.env.METHODS.split(','), // Convertit "GET,POST" en ["GET", "POST"]
-    // allowedHeaders: process.env.ALLOWEDHEADERS.split(','),
+    origin: function (origin, callback) {
+      const allowedOrigins = process.env.ORIGIN.split(',').map(o => o.trim());
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    methods: process.env.METHODS.split(',').map(m => m.trim()),
+    allowedHeaders: process.env.ALLOWEDHEADERS.split(',').map(h => h.trim()),
+    credentials: true,
   };
 
 app.use(cors(corsOptions));
