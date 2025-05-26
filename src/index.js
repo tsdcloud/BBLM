@@ -24,12 +24,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const  corsOptions = {
-    // origin: '*',
+// const  corsOptions = {
+//     // origin: '*',
+//     origin: process.env.ORIGIN,
+//     methods: process.env.METHODS,
+//     allowedHeaders: process.env.ALLOWEDHEADERS,
+// };
+const corsOptions = {
     origin: process.env.ORIGIN,
-    methods: process.env.METHODS,
-    allowedHeaders: process.env.ALLOWEDHEADERS,
-};
+    methods: process.env.METHODS.split(','), // Convertit "GET,POST" en ["GET", "POST"]
+    allowedHeaders: process.env.ALLOWEDHEADERS.split(','),
+  };
 
 app.use(cors(corsOptions));
 
