@@ -41,17 +41,12 @@ const getAllOrigins = function (origin, callback) {
     }
 }
 const corsOptions = {
-    origin: "https://berp.bfcgroupsa.com",
-    methods: 'GET,POST,PUT,DELETE,OPTIONS', // Allow these HTTP methods
-    allowedHeaders: 'Content-Type,Authorization,Access-Control-Allow-Origin', // Allow these headers
-    // methods: process.env.ALLOWED_METHODS.split(',').map(m => m.trim()),
-    // allowedHeaders: process.env.ALLOWED_HEADERS.split(',').map(h => h.trim()),
-    credentials: true,
+    origin: '*'
   };
 
 app.use(cors(corsOptions));
-//app.use(cors());
-
+// app.use(cors());
+//
 // Middleware de sécurité
 //app.use(helmet());
 
