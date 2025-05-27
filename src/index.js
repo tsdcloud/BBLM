@@ -43,7 +43,7 @@ const getAllOrigins = function (origin, callback) {
 const corsOptions = {
     origin: "https://berp.bfcgroupsa.com",
     methods: 'GET,POST,PUT,DELETE', // Allow these HTTP methods
-    allowedHeaders: 'Content-Type,Authorization', // Allow these headers
+    allowedHeaders: 'Content-Type,Authorization,Access-Control-Allow-Origin', // Allow these headers
     // methods: process.env.ALLOWED_METHODS.split(',').map(m => m.trim()),
     // allowedHeaders: process.env.ALLOWED_HEADERS.split(',').map(h => h.trim()),
     credentials: true,
