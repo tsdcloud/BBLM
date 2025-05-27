@@ -31,17 +31,21 @@ const app = express();
 //     allowedHeaders: process.env.ALLOWEDHEADERS.split(',').map(h => h.trim()), // Ajout manquant
 //     credentials: true, // Si vous utilisez des cookies
 // };
-const corsOptions = {
-    origin: function (origin, callback) {
-      const allowedOrigins = process.env.ALLOWED_ORIGIN.split(',').map(o => o.trim());
-      if (!origin || allowedOrigins.includes(origin)) {
+
+const getAllOrigins = function (origin, callback) {
+    const allowedOrigins = process.env.ALLOWED_ORIGIN.split(',').map(o => o.trim());
+    if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
-      } else {
+    } else {
         callback(new Error('Not allowed by CORS'));
-      }
-    },
-    methods: process.env.ALLOWED_METHODS.split(',').map(m => m.trim()),
-    allowedHeaders: process.env.ALLOWED_HEADERS.split(',').map(h => h.trim()),
+    }
+}
+const corsOptions = {
+    origin: "https://berp.bfcgroupsa.com",
+    methods: 'GET,POST,PUT,DELETE', // Allow these HTTP methods
+    allowedHeaders: 'Content-Type,Authorization', // Allow these headers
+    // methods: process.env.ALLOWED_METHODS.split(',').map(m => m.trim()),
+    // allowedHeaders: process.env.ALLOWED_HEADERS.split(',').map(h => h.trim()),
     credentials: true,
   };
 
@@ -49,7 +53,7 @@ app.use(cors(corsOptions));
 //app.use(cors());
 
 // Middleware de sécurité
-app.use(helmet());
+//app.use(helmet());
 
 // Middleware pour parser les corps de requête
 app.use(helmet());
