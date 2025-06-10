@@ -34,7 +34,7 @@ const app = express();
 //     allowedHeaders: process.env.ALLOWEDHEADERS.split(',').map(h => h.trim()), // Ajout manquant
 //     credentials: true, // Si vous utilisez des cookies
 // };
-<<<<<<< HEAD
+
 // const corsOptions = {
 //     origin: function (origin, callback) {
 //       const allowedOrigins = process.env.ORIGIN.split(',').map(o => o.trim());
@@ -54,20 +54,6 @@ const  corsOptions = {
   origin: '*',
 }
 app.use(cors(corsOptions));
-=======
-
-const getAllOrigins = function (origin, callback) {
-    const allowedOrigins = process.env.ALLOWED_ORIGIN.split(',').map(o => o.trim());
-    if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-    } else {
-        callback(new Error('Not allowed by CORS'));
-    }
-}
-const corsOptions = {
-    origin: ['https://berp.bfcgroupsa.com', 'https://budgetline.bfcgroupsa.com'],
-};
->>>>>>> 434c6feeccb9eebc9b720b1bb79bfcf1f8532343
 
 
 
