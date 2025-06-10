@@ -100,7 +100,11 @@ app.get('/api/', (req, res) => {
 });
 app.use(verifyUserExist); // Middleware d'authentification
 app.use(rateLimitAndTimeout); // Middleware de limitation de débit
-app.use("/api/major-budget-lines", majorBudgetLine);
+app.use("/api/major-budget-lines", (req, res) => {
+    res.setHeader('Access-Control-Request-Method', '*');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.send('Bienvenue sur notre API de ligne budgétaire !');
+}, majorBudgetLine);
 app.use("/api/budget-line-names", budgetLineName);
 app.use("/api/budget-line-ofs", budgetLineOf);
 app.use("/api/breakdown-budget-lineOfs", breakdownBudgetLineOf);
