@@ -23,9 +23,6 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-var express = require('express')
-var cors = require('cors');
-
 const app = express();
 
 // const corsOptions = {
@@ -34,27 +31,6 @@ const app = express();
 //     allowedHeaders: process.env.ALLOWEDHEADERS.split(',').map(h => h.trim()), // Ajout manquant
 //     credentials: true, // Si vous utilisez des cookies
 // };
-<<<<<<< HEAD
-// const corsOptions = {
-//     origin: function (origin, callback) {
-//       const allowedOrigins = process.env.ORIGIN.split(',').map(o => o.trim());
-//       if (!origin || allowedOrigins.includes(origin)) {
-//         callback(null, true);
-//       } else {
-//         callback(new Error('Not allowed by CORS'));
-//       }
-//     },
-//     methods: process.env.METHODS.split(',').map(m => m.trim()),
-//     allowedHeaders: process.env.ALLOWEDHEADERS.split(',').map(h => h.trim()),
-//     // credentials: true,
-//   };
-
-// app.use(cors(corsOptions));
-const  corsOptions = {
-  origin: '*',
-}
-app.use(cors(corsOptions));
-=======
 
 const getAllOrigins = function (origin, callback) {
     const allowedOrigins = process.env.ALLOWED_ORIGIN.split(',').map(o => o.trim());
@@ -67,41 +43,15 @@ const getAllOrigins = function (origin, callback) {
 const corsOptions = {
     origin: ['https://berp.bfcgroupsa.com', 'https://budgetline.bfcgroupsa.com'],
 };
->>>>>>> 434c6feeccb9eebc9b720b1bb79bfcf1f8532343
 
-
-
-
-//app.use(cors(corsOptions));
-app.use(cors());
-
-
-
-
-
-// Add headers
-app.use(function (req, res, next) {
-
-    // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', '*');
-
-    // Request methods you wish to allow
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-
-    // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-
-    // Set to true if you need the website to include cookies in the requests sent
-    // to the API (e.g. in case you use sessions)
-    res.setHeader('Access-Control-Allow-Credentials', true);
-
-    // Pass to next layer of middleware
-    next();
-});
-
+app.use(cors(corsOptions));
+// app.use(cors());
+//
+// Middleware de sécurité
+//app.use(helmet());
 
 // Middleware pour parser les corps de requête
-//app.use(helmet());
+app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("common"));
@@ -112,12 +62,8 @@ const accessLogStream = createWriteStream(path.join(__dirname, 'access.log'), { 
 app.use(morgan('combined', { stream: accessLogStream }));
 
 
-
-
 // Route principale
 app.get('/api/', (req, res) => {
-    res.setHeader('Access-Control-Request-Method', '*');
-    res.setHeader('Access-Control-Allow-Origin', '*');
     res.send('Bienvenue sur notre API de ligne budgétaire !');
 });
 app.use(verifyUserExist); // Middleware d'authentification

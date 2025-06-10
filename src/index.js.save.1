@@ -34,27 +34,6 @@ const app = express();
 //     allowedHeaders: process.env.ALLOWEDHEADERS.split(',').map(h => h.trim()), // Ajout manquant
 //     credentials: true, // Si vous utilisez des cookies
 // };
-<<<<<<< HEAD
-// const corsOptions = {
-//     origin: function (origin, callback) {
-//       const allowedOrigins = process.env.ORIGIN.split(',').map(o => o.trim());
-//       if (!origin || allowedOrigins.includes(origin)) {
-//         callback(null, true);
-//       } else {
-//         callback(new Error('Not allowed by CORS'));
-//       }
-//     },
-//     methods: process.env.METHODS.split(',').map(m => m.trim()),
-//     allowedHeaders: process.env.ALLOWEDHEADERS.split(',').map(h => h.trim()),
-//     // credentials: true,
-//   };
-
-// app.use(cors(corsOptions));
-const  corsOptions = {
-  origin: '*',
-}
-app.use(cors(corsOptions));
-=======
 
 const getAllOrigins = function (origin, callback) {
     const allowedOrigins = process.env.ALLOWED_ORIGIN.split(',').map(o => o.trim());
@@ -67,7 +46,6 @@ const getAllOrigins = function (origin, callback) {
 const corsOptions = {
     origin: ['https://berp.bfcgroupsa.com', 'https://budgetline.bfcgroupsa.com'],
 };
->>>>>>> 434c6feeccb9eebc9b720b1bb79bfcf1f8532343
 
 
 
@@ -122,7 +100,11 @@ app.get('/api/', (req, res) => {
 });
 app.use(verifyUserExist); // Middleware d'authentification
 app.use(rateLimitAndTimeout); // Middleware de limitation de débit
-app.use("/api/major-budget-lines", majorBudgetLine);
+app.use("/api/major-budget-lines", (req, res) => {
+    res.setHeader('Access-Control-Request-Method', '*');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.send('Bienvenue sur notre API de ligne budgétaire !');
+}, majorBudgetLine);
 app.use("/api/budget-line-names", budgetLineName);
 app.use("/api/budget-line-ofs", budgetLineOf);
 app.use("/api/breakdown-budget-lineOfs", breakdownBudgetLineOf);
