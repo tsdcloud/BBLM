@@ -31,20 +31,24 @@ const app = express();
 //     allowedHeaders: process.env.ALLOWEDHEADERS.split(',').map(h => h.trim()), // Ajout manquant
 //     credentials: true, // Si vous utilisez des cookies
 // };
-const corsOptions = {
-    origin: function (origin, callback) {
-      const allowedOrigins = process.env.ORIGIN.split(',').map(o => o.trim());
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    methods: process.env.METHODS.split(',').map(m => m.trim()),
-    allowedHeaders: process.env.ALLOWEDHEADERS.split(',').map(h => h.trim()),
-    credentials: true,
-  };
+// const corsOptions = {
+//     origin: function (origin, callback) {
+//       const allowedOrigins = process.env.ORIGIN.split(',').map(o => o.trim());
+//       if (!origin || allowedOrigins.includes(origin)) {
+//         callback(null, true);
+//       } else {
+//         callback(new Error('Not allowed by CORS'));
+//       }
+//     },
+//     methods: process.env.METHODS.split(',').map(m => m.trim()),
+//     allowedHeaders: process.env.ALLOWEDHEADERS.split(',').map(h => h.trim()),
+//     // credentials: true,
+//   };
 
+// app.use(cors(corsOptions));
+const  corsOptions = {
+  origin: '*',
+}
 app.use(cors(corsOptions));
 
 
