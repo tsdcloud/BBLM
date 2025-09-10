@@ -1,0 +1,51 @@
+npm install @casl/ability ...Sécurité & Authentification Gestion des permissions
+npm install @casl/prisma ... Intègre CASL avec Prisma pour les requêtes filtrées
+npm install @prisma/client@5 ...ORM moderne avec typage fort
+npm install amqplib ... Client RabbitMQ pour systèmes de message queue
+npm install bcrypt ... Hashage sécurisé des mots de passe
+npm install body-parser ... Parsing des corps de requêtes (JSON/URL-encoded)
+npm install cookie-parser ... Gestion des cookies
+npm install cors ... Gestion des CORS (Cross-Origin Resource Sharing)
+npm install date-fns ... Manipulation de dates (alternative à Moment.js)
+npm install dotenv ... Chargement des variables d'environnement (.env)
+npm install exceljs ... Génération/lecture de fichiers Excel
+npm install express
+npm install express-rate-limit ... Protection contre les attaques brute-force
+npm install express-validator ... Validation/sanitization des données
+npm install helmet ... Sécurisation des headers HTTP
+npm install jest
+npm install jsonwebtoken
+npm install jwt-decode ... Création/vérification de JWT + décodage côté client
+npm install morgan ... Logging des requêtes HTTP
+npm install multer ... Gestion des uploads de fichiers
+npm install mysql ... Driver MySQL bas niveau (souvent utilisé avec Prisma en arrière-plan)
+npm install xlsx
+
+npm install --legacy-peer-deps \...  Ignore les conflits de dépendances peers (nécessaire pour le conflit CASL/Prisma)
+  @prisma/client@5.22.0 \
+  @casl/prisma@1.5.0 \
+  @casl/ability@^6.7.2 \
+  amqplib@^0.10.5 \
+  bcrypt@^5.1.1 \
+  body-parser@^1.20.3 \
+  cookie-parser@^1.4.7 \
+  cors@^2.8.5 \
+  date-fns@^4.1.0 \
+  dotenv@^16.4.7 \
+  exceljs@^4.4.0 \
+  express@^4.21.2 \
+  express-rate-limit@^7.5.0 \
+  express-validator@^7.2.1 \
+  helmet@^8.0.0 \
+  jest@^29.7.0 \
+  jsonwebtoken@^9.0.2 \
+  jwt-decode@^4.0.0 \
+  morgan@^1.10.0 \
+  multer@^1.4.5-lts.1 \
+  mysql@^2.18.1 \
+  xlsx@^0.18.5 && \
+  pg
+npx prisma generate
+  npm install --save-dev nodemon typescript @types/express @types/node @types/pg
+
+  https://pris.ly/d/prisma-schema-location
