@@ -26,6 +26,8 @@ services:
     image: budget-line-app:latest # Nom d'image spécifique // image: nodejs
     container_name: budget_line
     restart: unless-stopped
+    ports:
+      - "127.0.0.1:4003:80"
     env_file: .env # Chargement des variables d'environnement depuis .env
     environment:
       - USER_GATEWAY_API_URL=${USER_GATEWAY_API_URL} # Variables utilisées dans le conteneur
@@ -46,8 +48,10 @@ services:
     container_name: webserver
     restart: unless-stopped
     ports:
-      - "80:80" # Ports HTTP/HTTPS exposés (à supprimer si Traefik est utilisé)
-      - "443:443"
+      - "127.0.0.1:4003:80"
+    # ports:
+    #   - "80:80" # Ports HTTP/HTTPS exposés (à supprimer si Traefik est utilisé)
+    #   - "443:443"
     volumes:
       - web-root:/var/www/html # Contenu du site web
       - .:/home/node/app # Code source de l'application
